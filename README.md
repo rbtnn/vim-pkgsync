@@ -45,7 +45,7 @@ The following is an example:
 * The `plugins/start/{username}` is specified {username}'s plugins that you want to install as a start plugin of `+packages` feature.
 * The `plugins/opt/{username}` is specified {username}'s plugins that you want to install as a opt plugin of `+packages` feature.
 
-3. Execute `:PkgSync` in your Vim/Neovim. And then will install and update the plugins at the `packpath` in `~/pkgsync.json`.
+4. Execute `:PkgSync` in your Vim/Neovim. And then will install and update the plugins at the `packpath` in `~/pkgsync.json`.
 If you execute `:PkgSync!`, unmanaged plugins in the `packpath` will be deleted.
 
 ![](https://raw.githubusercontent.com/rbtnn/vim-pkgsync/master/pkgsync.gif)
