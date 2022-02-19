@@ -52,7 +52,7 @@ function! s:make_params(pack_dir, start_d, opt_d) abort
 				if isdirectory(plugin_dir)
 					let params += [{
 						\   'name': printf('%s/%s', username, plugin_name),
-						\   'cmd': printf('%s fetch', base_cmd),
+						\   'cmd': printf('%s pull', base_cmd),
 						\   'cwd': plugin_dir,
 						\   'arg': has('nvim') ? { 'lines': [] } : tempname(),
 						\   'job': v:null,
