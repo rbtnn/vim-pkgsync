@@ -4,8 +4,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 The minimalist plugin manager for Vim/ Neovim using `+packages` feature.
-vim-pkgsync provides installing and updating plugins only.
-This plugin does not provide any event trigger of those.
+vim-pkgsync provides installing and updating plugins **ONLY**. Others feature will be not improved.
 
 ## Usage
 
