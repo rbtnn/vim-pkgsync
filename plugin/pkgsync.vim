@@ -13,7 +13,7 @@ function! s:pkgsync(bang, path) abort
 			let params = s:make_params(packpath, start_d, opt_d)
 			call s:start_jobs(params)
 			call s:wait_jobs(params)
-			if !a:bang
+			if a:bang
 				call s:delete_unmanaged_plugins(packpath, start_d, opt_d)
 			endif
 		else
