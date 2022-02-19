@@ -1,6 +1,8 @@
 
 # vim-pkgsync
 
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 The minimalist plugin manager for Vim/ Neovim using `+packages` feature.
 vim-pkgsync provides installing and updating plugins only.
 This plugin does not provide any event trigger of those.
@@ -34,3 +36,6 @@ The following is an example:
 * The `plugins/opt/{username}` key is {username}'s plugins that you want to install as a opt plugin of `+packages` feature.
 
 3. Execute `:PkgSync` in your Vim/Neovim. And then will install and update the plugins at the `packpath` in `~/pkgsync.json`.
+
+![](https://raw.githubusercontent.com/rbtnn/vim-pkgsync/master/pkgsync.gif)
+
