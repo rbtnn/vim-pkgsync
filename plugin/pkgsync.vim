@@ -1,28 +1,40 @@
 
 let g:loaded_pkgsync = 1
 
+let s:KIND_UPDATING = 0
+let s:KIND_INSTALLING = 1
+let s:KIND_DELETING = 2
+let s:KIND_ERROR = 3
+let s:KIND_NORMAL = 4
+
 command -bar -nargs=0 -bang PkgSync :call <SID>pkgsync((<q-bang> == '!'), get(g:, 'pkgsync_path', '~/pkgsync.json'))
 
 function! s:pkgsync(bang, path) abort
-	if filereadable(expand(a:path))
-		let j = json_decode(join(readfile(expand(a:path)), ''))
-		let packpath = expand(get(j, 'packpath', ''))
-		if isdirectory(expand(packpath))
-			let start_d = get(get(j, 'plugins', {}), 'start', {})
-			let opt_d = get(get(j, 'plugins', {}), 'opt', {})
-			let params = s:make_params(packpath, start_d, opt_d)
-			call s:start_jobs(params)
-			call s:wait_jobs(params)
-			call s:helptags(params)
-			if a:bang
-				call s:delete_unmanaged_plugins(packpath, start_d, opt_d)
+	let m = &more
+	try
+		set nomore
+		if filereadable(expand(a:path))
+			let j = json_decode(join(readfile(expand(a:path)), ''))
+			let packpath = expand(get(j, 'packpath', ''))
+			if isdirectory(expand(packpath))
+				let start_d = get(get(j, 'plugins', {}), 'start', {})
+				let opt_d = get(get(j, 'plugins', {}), 'opt', {})
+				let params = s:make_params(packpath, start_d, opt_d)
+				call s:start_jobs(params)
+				call s:wait_jobs(params)
+				call s:helptags(params)
+				if a:bang
+					call s:delete_unmanaged_plugins(packpath, start_d, opt_d)
+				endif
+			else
+				call s:echomsg(s:KIND_ERROR, printf('Could not find "%s". Please create the directory!', packpath))
 			endif
 		else
-			call s:echomsg('', printf('Could not find "%s". Please create the directory!', packpath))
+			call s:echomsg(s:KIND_ERROR, printf('Could not find "%s". Please create the file!', a:path))
 		endif
-	else
-		call s:echomsg('', printf('Could not find "%s". Please create the file!', a:path))
-	endif
+	finally
+		let &more = m
+	endtry
 endfunction
 
 function! s:make_params(pack_dir, start_d, opt_d) abort
@@ -44,7 +56,7 @@ function! s:make_params(pack_dir, start_d, opt_d) abort
 						\   'cwd': plugin_dir,
 						\   'arg': has('nvim') ? { 'lines': [] } : tempname(),
 						\   'job': v:null,
-						\   'msg': 'Updating',
+						\   'kind': s:KIND_UPDATING,
 						\   'running': v:true,
 						\   'start_or_opt': start_or_opt,
 						\   'plugin_dir': plugin_dir,
@@ -58,7 +70,7 @@ function! s:make_params(pack_dir, start_d, opt_d) abort
 						\   'cwd': pack_dir,
 						\   'arg': has('nvim') ? { 'lines': [] } : tempname(),
 						\   'job': v:null,
-						\   'msg': 'Installing',
+						\   'kind': s:KIND_INSTALLING,
 						\   'running': v:true,
 						\   'start_or_opt': start_or_opt,
 						\   'plugin_dir': plugin_dir,
@@ -102,7 +114,7 @@ endfunction
 
 function! s:delete_carefull(pack_dir, path) abort
 	if (-1 != index(split(a:path, '[\/]'), 'pack')) && (a:path[:(len(a:pack_dir) - 1)] == a:pack_dir)
-		call s:echomsg('Deleting', printf('the unmanaged directory: "%s"', a:path))
+		call s:echomsg(s:KIND_DELETING, printf('Deleting the unmanaged directory: "%s"', a:path))
 		call delete(a:path, 'rf')
 	endif
 endfunction
@@ -148,19 +160,21 @@ function! s:wait_jobs(params) abort
 
 			let n += 1
 			let param['running'] = v:false
-			call s:echomsg(param['msg'], param['name'] .. '(' .. param['start_or_opt'] .. ')')
+			let kind_msg = (param['kind'] == s:KIND_UPDATING) ? 'Updating' : 'Installing'
+			call s:echomsg(param['kind'], printf('%3d/%d. %s %s(%s)',
+				\	n, len(a:params), kind_msg, param['name'], param['start_or_opt']))
 
 			if has('nvim')
 				for line in param['arg']['lines']
 					if !empty(trim(line))
-						echomsg '  ' .. line
+						call s:echomsg(s:KIND_NORMAL, '  ' .. line)
 					endif
 				endfor
 			else
 				if filereadable(param['arg'])
 					for line in readfile(param['arg'])
 						if !empty(trim(line))
-							echomsg '  ' .. line
+							call s:echomsg(s:KIND_NORMAL, '  ' .. line)
 						endif
 					endfor
 					call delete(param['arg'])
@@ -183,20 +197,19 @@ function s:system_onevent(d, job, data, event) abort
 	sleep 10m
 endfunction
 
-function s:echomsg(msg, text) abort
-	if a:msg == 'Updating'
+function s:echomsg(kind, text) abort
+	if a:kind == s:KIND_UPDATING
 		echohl Title
-		echomsg printf('[pkgsync] %s %s', a:msg, a:text)
-	elseif a:msg == 'Installing'
+	elseif a:kind == s:KIND_INSTALLING
 		echohl Type
-		echomsg printf('[pkgsync] %s %s', a:msg, a:text)
-	elseif a:msg == 'Deleting'
+	elseif a:kind == s:KIND_DELETING
 		echohl PreProc
-		echomsg printf('[pkgsync] %s %s', a:msg, a:text)
-	else
+	elseif a:kind == s:KIND_ERROR
 		echohl Error
-		echomsg printf('[pkgsync] %s', a:text)
+	else
+		echohl None
 	endif
+	echomsg printf('[pkgsync] %s', a:text)
 	echohl None
 endfunction
 
