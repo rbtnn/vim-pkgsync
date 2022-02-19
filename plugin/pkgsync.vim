@@ -7,7 +7,7 @@ let s:KIND_DELETING = 2
 let s:KIND_ERROR = 3
 let s:KIND_NORMAL = 4
 
-command -bar -nargs=0 -bang PkgSync :call <SID>pkgsync((<q-bang> == '!'), get(g:, 'pkgsync_path', '~/pkgsync.json'))
+command! -bar -nargs=0 -bang PkgSync :call <SID>pkgsync((<q-bang> == '!'), get(g:, 'pkgsync_path', '~/pkgsync.json'))
 
 function! s:pkgsync(bang, path) abort
 	let m = &more
