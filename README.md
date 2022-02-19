@@ -29,8 +29,8 @@ The following is an example:
 }
 ```
 
-* The `packpath` key is at where plugins are installed and updated.
-* The `plugins/start/{username}` key is {username}'s plugins that you want to install and update as a start plugin of `+packages` feature.
-* The `plugins/opt/{username}` key is {username}'s plugins that you want to install and update as a opt plugin of `+packages` feature.
+* The `packpath` key is at where plugins are installed. `&packpath` needs to contain it.
+* The `plugins/start/{username}` key is {username}'s plugins that you want to install as a start plugin of `+packages` feature.
+* The `plugins/opt/{username}` key is {username}'s plugins that you want to install as a opt plugin of `+packages` feature.
 
-3. Execute `:PkgSync` in your Vim/Neovim. And then will install and update plugins at the `packpath` in `~/pkgsync.json`.
+3. Execute `:PkgSync` in your Vim/Neovim. And then will install and update the plugins at the `packpath` in `~/pkgsync.json`.
