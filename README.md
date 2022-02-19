@@ -7,7 +7,7 @@ This plugin does not provide any event trigger of those.
 
 ## Usage
 
-1. Clone this plugin and add to runtimepath
+1. Clone this plugin and add to runtimepath.
 2. Create `~/pkgsync.json` that is a setting file in this plugin.
 The following is an example:
 
@@ -29,4 +29,4 @@ The following is an example:
 }
 ```
 
-3. Execute `:PkgSync` in your Vim/Neovim. And then will install and update plugins.
+3. Execute `:PkgSync` in your Vim/Neovim. And then will install and update plugins at the `packpath` in `~/pkgsync.json`.
