@@ -29,4 +29,8 @@ The following is an example:
 }
 ```
 
+* The `packpath` key is at where plugins are installed and updated.
+* The `plugins/start/{username}/{repositoryname}` key is plugins that you want to install and update as a start plugin of `+packages` feature.
+* The `plugins/opt/{username}/{repositoryname}` key is plugins that you want to install and update as a opt plugin of `+packages` feature.
+
 3. Execute `:PkgSync` in your Vim/Neovim. And then will install and update plugins at the `packpath` in `~/pkgsync.json`.
