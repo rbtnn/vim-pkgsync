@@ -16,6 +16,7 @@ function! s:pkgsync(bang, path) abort
 			if !a:bang
 				call s:delete_unmanaged_plugins(packpath, start_d, opt_d)
 			endif
+			call s:helptags(params)
 		else
 			call s:echomsg('', printf('Could not find "%s". Please create the directory!', packpath))
 		endif
@@ -165,6 +166,14 @@ function! s:wait_jobs(params) abort
 			endif
 		endfor
 	endwhile
+endfunction
+
+function! s:helptags(params) abort
+	for param in a:params
+		if isdirectory(param['cwd'] .. '/doc')
+			execute printf('helptags %s', fnameescape(param['cwd'] .. '/doc'))
+		endif
+	endfor
 endfunction
 
 function s:system_onevent(d, job, data, event) abort
