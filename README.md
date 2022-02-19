@@ -8,10 +8,21 @@ vim-pkgsync provides installing and updating plugins **ONLY**. Others feature wi
 
 ## Usage
 
-1. Clone this plugin and add it to `&runtimepath`.
-2. Create `~/pkgsync.json` that is a setting file of this plugin.
-The following is an example:
+1. Clone this repository.
+```
+$git clone --depth 1 https://github.com/rbtnn/vim-pkgsync.git
+```
 
+2. Add it to `&runtimepath`. The following is a minimum example of .vimrc:
+```
+set packpath+=~/vim
+set runtimepath+=~/vim-pkgsync
+filetype plugin indent on
+syntax enable
+```
+
+3. Create `~/pkgsync.json` that is a setting file of this plugin.
+The following is an example:
 ```
 {
     "packpath" : "~/vim",
@@ -30,9 +41,9 @@ The following is an example:
 }
 ```
 
-* The `packpath` key is at where plugins are installed. `&packpath` needs to contain it.
-* The `plugins/start/{username}` key is {username}'s plugins that you want to install as a start plugin of `+packages` feature.
-* The `plugins/opt/{username}` key is {username}'s plugins that you want to install as a opt plugin of `+packages` feature.
+* The `packpath` is specified at where plugins are installed. `&packpath` needs to contain it.
+* The `plugins/start/{username}` is specified {username}'s plugins that you want to install as a start plugin of `+packages` feature.
+* The `plugins/opt/{username}` is specified {username}'s plugins that you want to install as a opt plugin of `+packages` feature.
 
 3. Execute `:PkgSync` in your Vim/Neovim. And then will install and update the plugins at the `packpath` in `~/pkgsync.json`.
 If you execute `:PkgSync!`, unmanaged plugins in the `packpath` will be deleted.
