@@ -8,7 +8,7 @@ This plugin does not provide any event trigger of those.
 ## Usage
 
 1. Clone this plugin and add it to `&runtimepath`.
-2. Create `~/pkgsync.json` that is a setting file in this plugin.
+2. Create `~/pkgsync.json` that is a setting file of this plugin.
 The following is an example:
 
 ```
@@ -17,12 +17,12 @@ The following is an example:
     "plugins" : {
         "start" : {
             "bluz71" : ["vim-moonfly-colors"],
-            "cocopon" : ["vaffle.vim"],
+            "cocopon" : ["vaffle.vim"]
         },
         "opt" : {
              "rbtnn" : [
                 "vim-pkgsync",
-                "vim-ambiwidth",
+                "vim-ambiwidth"
              }
         }
     }
