@@ -13,10 +13,10 @@ function! s:pkgsync(bang, path) abort
 			let params = s:make_params(packpath, start_d, opt_d)
 			call s:start_jobs(params)
 			call s:wait_jobs(params)
+			call s:helptags(params)
 			if a:bang
 				call s:delete_unmanaged_plugins(packpath, start_d, opt_d)
 			endif
-			call s:helptags(params)
 		else
 			call s:echomsg('', printf('Could not find "%s". Please create the directory!', packpath))
 		endif
@@ -47,6 +47,7 @@ function! s:make_params(pack_dir, start_d, opt_d) abort
 						\   'msg': 'Updating',
 						\   'running': v:true,
 						\   'start_or_opt': start_or_opt,
+						\   'plugin_dir': plugin_dir,
 						\ }]
 				else
 					let params += [{
@@ -60,6 +61,7 @@ function! s:make_params(pack_dir, start_d, opt_d) abort
 						\   'msg': 'Installing',
 						\   'running': v:true,
 						\   'start_or_opt': start_or_opt,
+						\   'plugin_dir': plugin_dir,
 						\ }]
 				endif
 			endfor
@@ -170,8 +172,8 @@ endfunction
 
 function! s:helptags(params) abort
 	for param in a:params
-		if isdirectory(param['cwd'] .. '/doc')
-			execute printf('helptags %s', fnameescape(param['cwd'] .. '/doc'))
+		if isdirectory(param['plugin_dir'] .. '/doc')
+			execute printf('helptags %s', fnameescape(param['plugin_dir'] .. '/doc'))
 		endif
 	endfor
 endfunction
