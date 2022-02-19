@@ -7,7 +7,7 @@ This plugin does not provide any event trigger of those.
 
 ## Usage
 
-1. Clone this plugin and add it to runtimepath.
+1. Clone this plugin and add it to `&runtimepath`.
 2. Create `~/pkgsync.json` that is a setting file in this plugin.
 The following is an example:
 
