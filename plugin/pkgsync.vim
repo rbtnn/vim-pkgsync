@@ -141,6 +141,7 @@ function! s:start_jobs(params) abort
 endfunction
 
 function! s:wait_jobs(params) abort
+	call s:echomsg(s:KIND_NORMAL, '[pkgsync] ' .. strftime("%c", localtime()))
 	let n = 0
 	while n < len(a:params)
 		for param in a:params
@@ -209,7 +210,7 @@ function s:echomsg(kind, text) abort
 	else
 		echohl None
 	endif
-	echomsg printf('[pkgsync] %s', a:text)
+	echomsg a:text
 	echohl None
 endfunction
 
