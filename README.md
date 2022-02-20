@@ -13,7 +13,7 @@ vim-pkgsync provides installing and updating plugins **ONLY**. Other features wi
 $git clone --depth 1 https://github.com/rbtnn/vim-pkgsync.git
 ```
 
-2. Add it to `&runtimepath`. The following is a minimum example of .vimrc:
+2. Add it to `&runtimepath`. The following is a minimal example of .vimrc:
 ```
 set packpath+=~/vim
 set runtimepath+=~/vim-pkgsync
