@@ -1,6 +1,9 @@
 
 let g:loaded_pkgsync = 1
 
+let s:CMDFORMAT_CLONE = 'git -c credential.helper= clone --no-tags --single-branch --depth 1 https://github.com/%s/%s.git'
+let s:CMDFORMAT_PULL  = 'git -c credential.helper= pull'
+
 let s:KIND_UPDATING = 0
 let s:KIND_INSTALLING = 1
 let s:KIND_DELETING = 2
@@ -38,7 +41,6 @@ function! s:pkgsync(bang, path) abort
 endfunction
 
 function! s:make_params(pack_dir, start_d, opt_d) abort
-	let base_cmd = 'git -c credential.helper= '
 	let params = []
 	for d in [a:start_d, a:opt_d]
 		let start_or_opt = (d == a:start_d ? 'start' : 'opt')
@@ -52,7 +54,7 @@ function! s:make_params(pack_dir, start_d, opt_d) abort
 				if isdirectory(plugin_dir)
 					let params += [{
 						\   'name': printf('%s/%s', username, plugin_name),
-						\   'cmd': printf('%s pull', base_cmd),
+						\   'cmd': s:CMDFORMAT_PULL,
 						\   'cwd': plugin_dir,
 						\   'arg': has('nvim') ? { 'lines': [] } : tempname(),
 						\   'job': v:null,
@@ -64,9 +66,7 @@ function! s:make_params(pack_dir, start_d, opt_d) abort
 				else
 					let params += [{
 						\   'name': printf('%s/%s', username, plugin_name),
-						\   'cmd': printf(
-						\     '%s clone --origin origin --depth 1 https://github.com/%s.git', base_cmd, printf('%s/%s', username, plugin_name)
-						\   ),
+						\   'cmd': printf(s:CMDFORMAT_CLONE, username, plugin_name),
 						\   'cwd': pack_dir,
 						\   'arg': has('nvim') ? { 'lines': [] } : tempname(),
 						\   'job': v:null,
