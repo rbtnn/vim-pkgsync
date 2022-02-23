@@ -35,7 +35,7 @@ The following is an example:
              "rbtnn" : [
                 "vim-pkgsync",
                 "vim-ambiwidth"
-             }
+             ]
         }
     }
 }
