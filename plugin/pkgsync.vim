@@ -1,20 +1,11 @@
 
 let g:loaded_pkgsync = 1
 
-let s:CMDFORMAT_CLONE = 'git -c credential.helper= clone --no-tags --single-branch --depth 1 https://github.com/%s/%s.git'
-let s:CMDFORMAT_PULL  = 'git -c credential.helper= pull'
-
-let s:KIND_UPDATING = 0
-let s:KIND_INSTALLING = 1
-let s:KIND_DELETING = 2
-let s:KIND_ERROR = 3
-let s:KIND_NORMAL = 4
-
-command! -nargs=* -bang PkgSync :call <SID>pkgsync((<q-bang> == '!'), <f-args>)
+command! -complete=customlist,pkgsync#comp -nargs=* PkgSync :call <SID>pkgsync(<f-args>)
 
 let s:rootdir = expand('<sfile>:h:h')
 
-function! s:pkgsync(bang, ...) abort
+function! s:pkgsync(...) abort
 	let m = &more
 	try
 		set nomore
@@ -32,11 +23,6 @@ function! s:pkgsync(bang, ...) abort
 			elseif args[0] == 'update'
 				call pkgsync#update(args)
 			elseif args[0] == 'clean'
-				call pkgsync#clean(args)
-			endif
-		else
-			call pkgsync#update(args)
-			if a:bang
 				call pkgsync#clean(args)
 			endif
 		endif

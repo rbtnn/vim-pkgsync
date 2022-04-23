@@ -27,22 +27,28 @@ And if you are using MacOS or Linux, execute `chmod 755 /path/to/vim-pkgsync/bin
 
 ## Usage
 
-`:PkgSync` command in Vim and `vimpkgsync` command in Terminal are the same interface.
+`:PkgSync` command in Vim and `vimpkgsync` command in Terminal have the same interface.
 
-### `:PkgSync init` or `vimpkgsync init`
+### vimpkgsync init
 At first, you must run this command for initialization of this plugin manager.
 
-### `:PkgSync list` or `vimpkgsync list`
+### vimpkgsync list
 Show your installing Vim plugin list.
 
-### `:PkgSync update` or `vimpkgsync update`
+### vimpkgsync update
 Update your Vim plugins.
 
-### `:PkgSync install user/plugin` or `vimpkgsync install user/plugin`
-Install `user/plugin` from GitHub.
+### vimpkgsync install user/plugin
+Install `user/plugin` from GitHub as a start Vim plugin of the packages feature.
 
-### `:PkgSync uninstall user/plugin` or `vimpkgsync uninstall user/plugin`
-Uninstall `user/plugin`.
+### vimpkgsync install opt user/plugin
+Install `user/plugin` from GitHub as a opt Vim plugin of the packages feature.
+
+### vimpkgsync uninstall user/plugin
+Uninstall `user/plugin` from start Vim plugins in the packpath.
+
+### vimpkgsync uninstall opt user/plugin
+Uninstall `user/plugin` from opt Vim plugins in the packpath.
 
 ### `:PkgSync clean` or `vimpkgsync clean`
 Uninstall unmanaged Vim plugins in the packpath.

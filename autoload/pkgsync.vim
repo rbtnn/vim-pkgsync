@@ -62,21 +62,22 @@ function! pkgsync#install(args) abort
 	let j = s:read_config()
 	if !empty(j)
 		let packpath = expand(get(j, 'packpath', ''))
-		let m = matchlist(join(a:args), '^install\s\+\([^/]\+\)/\([^/]\+\)$')
+		let m = matchlist(join(a:args), '^install\s\+\(opt\s\+\)\?\([^/]\+\)/\([^/]\+\)$')
 		if !empty(m)
-			let user = m[1]
-			let plugname = m[2]
+			let start_or_opt = (m[1] =~# '^opt\s\+$') ? 'opt' : 'start'
+			let user = m[2]
+			let plugname = m[3]
 			let d = {}
 			let d[user] = [plugname]
-			let params = s:make_params(packpath, d, {})
+			let params = s:make_params(packpath, (start_or_opt == 'start') ? d : {}, (start_or_opt == 'opt') ? d : {})
 			call s:start_jobs(params)
 			call s:wait_jobs(params)
 			call s:helptags(params)
-			let path = globpath(packpath, join(['pack', user, 'start', plugname], '/'))
+			let path = globpath(packpath, join(['pack', user, start_or_opt, plugname], '/'))
 			if isdirectory(path)
-				let j['plugins']['start'][user] = get(j['plugins']['start'], user, [])
-				if -1 == index(j['plugins']['start'][user], plugname)
-					let j['plugins']['start'][user] += [plugname]
+				let j['plugins'][start_or_opt][user] = get(j['plugins'][start_or_opt], user, [])
+				if -1 == index(j['plugins'][start_or_opt][user], plugname)
+					let j['plugins'][start_or_opt][user] += [plugname]
 				endif
 				call s:write_config(j)
 			endif
@@ -88,17 +89,18 @@ function! pkgsync#uninstall(args) abort
 	let j = s:read_config()
 	if !empty(j)
 		let packpath = expand(get(j, 'packpath', ''))
-		let m = matchlist(join(a:args), '^uninstall\s\+\([^/]\+\)/\([^/]\+\)$')
+		let m = matchlist(join(a:args), '^uninstall\s\+\(opt\s\+\)\?\([^/]\+\)/\([^/]\+\)$')
 		if !empty(m)
-			let user = m[1]
-			let plugname = m[2]
-			let j['plugins']['start'][user] = get(j['plugins']['start'], user, [])
-			let i = index(j['plugins']['start'][user], plugname)
+			let start_or_opt = (m[1] =~# '^opt\s\+$') ? 'opt' : 'start'
+			let user = m[2]
+			let plugname = m[3]
+			let j['plugins'][start_or_opt][user] = get(j['plugins'][start_or_opt], user, [])
+			let i = index(j['plugins'][start_or_opt][user], plugname)
 			if -1 != i
-				call remove(j['plugins']['start'][user], i)
+				call remove(j['plugins'][start_or_opt][user], i)
 			endif
 			call s:write_config(j)
-			let path = globpath(packpath, join(['pack', user, 'start', plugname], '/'))
+			let path = globpath(packpath, join(['pack', user, start_or_opt, plugname], '/'))
 			call s:delete_carefull(packpath, path)
 		endif
 	endif
@@ -127,6 +129,10 @@ function! pkgsync#clean(args) abort
 	endif
 endfunction
 
+function! pkgsync#comp(ArgLead, CmdLine, CursorPos) abort
+	let xs = ['init', 'list', 'update', 'install', 'uninstall', 'clean']
+	return filter(xs, { i,x -> -1 != match(x, a:ArgLead) })
+endfunction
 
 
 function! s:read_config() abort
