@@ -29,8 +29,10 @@ And if you are using MacOS or Linux, execute `chmod 755 /path/to/vim-pkgsync/bin
 
 `:PkgSync` command in Vim and `vimpkgsync` command in Terminal have the same interface.
 
-### vimpkgsync init
+### vimpkgsync init [{packpath}]
 At first, you must run this command for initialization of this plugin manager.
+If {packpath} is specified, this plugin manager initializes with {packpath} as the packpath.
+If {packpath} is not specified, the default value of {packpath} is `~/vim`.
 
 ### vimpkgsync list
 Show your installing Vim plugin list.

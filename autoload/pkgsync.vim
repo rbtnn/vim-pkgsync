@@ -21,7 +21,7 @@ function! pkgsync#init(args) abort
 		call pkgsync#output('You are already initialized!')
 	else
 		call s:write_config({
-			\   'packpath': '~/vim',
+			\   'packpath': get(a:args, 1, '~/vim'),
 			\   'plugins': {
 			\     'start': {},
 			\     'opt': {},
