@@ -50,6 +50,6 @@ Uninstall `user/plugin` from start Vim plugins in the packpath.
 ### vimpkgsync uninstall opt user/plugin
 Uninstall `user/plugin` from opt Vim plugins in the packpath.
 
-### `:PkgSync clean` or `vimpkgsync clean`
+### vimpkgsync clean
 Uninstall unmanaged Vim plugins in the packpath.
 
