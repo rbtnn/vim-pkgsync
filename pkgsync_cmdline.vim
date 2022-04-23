@@ -5,7 +5,7 @@ function s:main() abort
 	try
 		let g:pkgsync_stdout = 1
 		execute printf('source %s/autoload/pkgsync.vim', s:rootdir)
-		let args = v:argv[4:]
+		let args = v:argv[5:]
 		if 0 < len(args)
 			if args[0] == 'init'
 				call pkgsync#init(args)
