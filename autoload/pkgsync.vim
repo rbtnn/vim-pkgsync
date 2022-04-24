@@ -7,6 +7,10 @@ let s:KIND_INSTALLING = 1
 
 let s:config_path = expand('~/pkgsync.json')
 
+function! pkgsync#error(text) abort
+	throw 'error: ' .. a:text
+endfunction
+
 function! pkgsync#output(text) abort
 	if exists('g:pkgsync_stdout')
 		put=a:text
@@ -18,17 +22,16 @@ endfunction
 
 function! pkgsync#init(args) abort
 	if filereadable(s:config_path)
-		call pkgsync#output('You are already initialized!')
-	else
-		call s:write_config({
-			\   'packpath': get(a:args, 1, '~/vim'),
-			\   'plugins': {
-			\     'start': {},
-			\     'opt': {},
-			\   },
-			\ })
-		call pkgsync#output('The initialization finished!')
+		call pkgsync#error('You are already initialized!')
 	endif
+	call s:write_config({
+		\   'packpath': get(a:args, 1, '~/vim'),
+		\   'plugins': {
+		\     'start': {},
+		\     'opt': {},
+		\   },
+		\ })
+	call pkgsync#output('The initialization finished!')
 endfunction
 
 function! pkgsync#list(args) abort
@@ -137,10 +140,13 @@ endfunction
 
 function! s:read_config() abort
 	if filereadable(s:config_path)
-		return json_decode(join(readfile(s:config_path), ''))
+		let j = json_decode(join(readfile(s:config_path), ''))
+		if !has_key(j, 'packpath') || !has_key(j, 'plugins')
+			call pkgsync#error(printf('%s is broken! Please you should remove it and try initialization again!', string(s:config_path)))
+		endif
+		return j
 	else
-		call pkgsync#output('error!')
-		return {}
+		call pkgsync#error('You are not initialized vim-pkgsync! Please initialize it!')
 	endif
 endfunction
 

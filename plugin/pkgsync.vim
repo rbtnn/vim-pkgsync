@@ -24,8 +24,16 @@ function! s:pkgsync(...) abort
 				call pkgsync#update(args)
 			elseif args[0] == 'clean'
 				call pkgsync#clean(args)
+			else
+				call pkgsync#error('unknown subcommand: ' .. string(args[0]))
 			endif
+		else
+			call pkgsync#error('Please you must specify subcommand!')
 		endif
+	catch
+		echohl Error
+		echo '[vim-pkgsync]' v:exception
+		echohl None
 	finally
 		let &more = m
 	endtry
