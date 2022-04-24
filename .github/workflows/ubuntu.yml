@@ -10,18 +10,39 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run commands
+      - name: chmod
         run: |
           chmod 755 bin/vimpkgsync
+
+      - name: init
+        run: |
           bin/vimpkgsync init
+
+      - name: list
+        run: |
           bin/vimpkgsync list
+
+      - name: install
+        run: |
           bin/vimpkgsync install thinca/vim-quickrun
           bin/vimpkgsync install NLKNguyen/papercolor-theme
           bin/vimpkgsync install opt itchyny/lightline.vim
           bin/vimpkgsync install opt rbtnn/vim-gloaded
+
+      - name: update
+        run: |
           bin/vimpkgsync update
+
+      - name: uninstall
+        run: |
           bin/vimpkgsync uninstall NLKNguyen/papercolor-theme
           bin/vimpkgsync uninstall opt itchyny/lightline.vim
+
+      - name: clean
+        run: |
           bin/vimpkgsync clean
+
+      - name: list
+        run: |
           bin/vimpkgsync list
 

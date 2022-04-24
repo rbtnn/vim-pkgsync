@@ -11,18 +11,42 @@ jobs:
       - uses: rhysd/action-setup-vim@v1
       - uses: actions/checkout@v2
 
-      - name: Run commands
+      - name: init
         shell: cmd
         run: |
           bin\vimpkgsync.cmd init
+
+      - name: list
+        shell: cmd
+        run: |
           bin\vimpkgsync.cmd list
+
+      - name: install
+        shell: cmd
+        run: |
           bin\vimpkgsync.cmd install thinca/vim-quickrun
           bin\vimpkgsync.cmd install NLKNguyen/papercolor-theme
           bin\vimpkgsync.cmd install opt itchyny/lightline.vim
           bin\vimpkgsync.cmd install opt rbtnn/vim-gloaded
+
+      - name: update
+        shell: cmd
+        run: |
           bin\vimpkgsync.cmd update
+
+      - name: uninstall
+        shell: cmd
+        run: |
           bin\vimpkgsync.cmd uninstall NLKNguyen/papercolor-theme
           bin\vimpkgsync.cmd uninstall opt itchyny/lightline.vim
+
+      - name: clean
+        shell: cmd
+        run: |
           bin\vimpkgsync.cmd clean
+
+      - name: list
+        shell: cmd
+        run: |
           bin\vimpkgsync.cmd list
 
