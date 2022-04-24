@@ -1,4 +1,4 @@
-name: vim
+name: ubuntu
 
 on: [push]
 
@@ -9,6 +9,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Run commands
         run: |
           chmod 755 bin/vimpkgsync

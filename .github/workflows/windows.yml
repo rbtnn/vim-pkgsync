@@ -1,0 +1,27 @@
+name: windows
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run commands
+        shell: cmd
+        run: |
+          bin\vimpkgsync.cmd init
+          bin\vimpkgsync.cmd list
+          bin\vimpkgsync.cmd install thinca/vim-quickrun
+          bin\vimpkgsync.cmd install NLKNguyen/papercolor-theme
+          bin\vimpkgsync.cmd install opt itchyny/lightline.vim
+          bin\vimpkgsync.cmd install opt rbtnn/vim-gloaded
+          bin\vimpkgsync.cmd update
+          bin\vimpkgsync.cmd uninstall NLKNguyen/papercolor-theme
+          bin\vimpkgsync.cmd uninstall opt itchyny/lightline.vim
+          bin\vimpkgsync.cmd clean
+          bin\vimpkgsync.cmd list
+
