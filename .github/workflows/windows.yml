@@ -14,39 +14,39 @@ jobs:
       - name: init
         shell: cmd
         run: |
-          bin\vimpkgsync.cmd init
+          call bin\vimpkgsync.cmd init
 
       - name: list
         shell: cmd
         run: |
-          bin\vimpkgsync.cmd list
+          call bin\vimpkgsync.cmd list
 
       - name: install
         shell: cmd
         run: |
-          bin\vimpkgsync.cmd install thinca/vim-quickrun
-          bin\vimpkgsync.cmd install NLKNguyen/papercolor-theme
-          bin\vimpkgsync.cmd install opt itchyny/lightline.vim
-          bin\vimpkgsync.cmd install opt rbtnn/vim-gloaded
+          call bin\vimpkgsync.cmd install thinca/vim-quickrun
+          call bin\vimpkgsync.cmd install NLKNguyen/papercolor-theme
+          call bin\vimpkgsync.cmd install opt itchyny/lightline.vim
+          call bin\vimpkgsync.cmd install opt rbtnn/vim-gloaded
 
       - name: update
         shell: cmd
         run: |
-          bin\vimpkgsync.cmd update
+          call bin\vimpkgsync.cmd update
 
       - name: uninstall
         shell: cmd
         run: |
-          bin\vimpkgsync.cmd uninstall NLKNguyen/papercolor-theme
-          bin\vimpkgsync.cmd uninstall opt itchyny/lightline.vim
+          call bin\vimpkgsync.cmd uninstall NLKNguyen/papercolor-theme
+          call bin\vimpkgsync.cmd uninstall opt itchyny/lightline.vim
 
       - name: clean
         shell: cmd
         run: |
-          bin\vimpkgsync.cmd clean
+          call bin\vimpkgsync.cmd clean
 
       - name: list
         shell: cmd
         run: |
-          bin\vimpkgsync.cmd list
+          call bin\vimpkgsync.cmd list
 
