@@ -16,6 +16,7 @@ let s:subcmd2functions = {
 	\ }
 
 let s:config_path = expand('~/pkgsync.json')
+let s:root_dir = expand('<sfile>:h:h')
 
 function! pkgsync#parse_cmdline(args) abort
 	let args = a:args
@@ -159,7 +160,25 @@ function! pkgsync#clean(args) abort
 endfunction
 
 function! pkgsync#help(args) abort
-	call pkgsync#output('[help documents]')
+	let readme_path = fnamemodify(s:root_dir .. '/README.md', ':p')
+	if filereadable(readme_path)
+		let lines = readfile(readme_path)
+		let b = v:false
+		for line in lines
+			if line =~ '^### '
+				let b = v:true
+			endif
+			if b
+				if line =~ '^### '
+					call pkgsync#output(line[4:])
+				else
+					call pkgsync#output('    ' .. line)
+				endif
+			endif
+		endfor
+	else
+		call pkgsync#output('[help documents]')
+	endif
 endfunction
 
 function! pkgsync#comp(ArgLead, CmdLine, CursorPos) abort

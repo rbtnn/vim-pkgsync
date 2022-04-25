@@ -6,7 +6,9 @@
 [![](https://github.com/rbtnn/vim-pkgsync/workflows/windows/badge.svg)](https://github.com/rbtnn/vim-pkgsync/actions/workflows/windows.yml)
 
 The minimalist plugin manager for Vim/ Neovim using `+packages` feature.
-vim-pkgsync provides `:PkgSync` command for Vim and `vimpkgsync` command for Terminal.
+vim-pkgsync provides `:PkgSync` command for Vim and `vimpkgsync` command for Terminal that have the same interface.
+
+
 
 ## Setup
 
@@ -27,9 +29,9 @@ syntax enable
 3. If you want to use `vimpkgsync` command in Terminal, Add `/path/to/vim-pkgsync/bin` to PATH environment.
 And if you are using MacOS or Linux, execute `chmod 755 /path/to/vim-pkgsync/bin/vimpkgsync`.
 
-## Usage
 
-`:PkgSync` command in Vim and `vimpkgsync` command in Terminal have the same interface.
+
+## Usage
 
 ### vimpkgsync init [{packpath}]
 At first, you must run this command for initialization of this plugin manager.
@@ -37,26 +39,22 @@ If {packpath} is specified, this plugin manager initializes with {packpath} as t
 If {packpath} is not specified, the default value of {packpath} is `~/vim`.
 
 ### vimpkgsync list
-Show your installing Vim plugin list.
+Show your installed Vim plugin list.
 
 ### vimpkgsync update
 Update your Vim plugins.
 
-### vimpkgsync install user/plugin
+### vimpkgsync install [opt] user/plugin
 Install `user/plugin` from GitHub as a start Vim plugin of the packages feature.
+If `opt` is specified, install `user/plugin` from GitHub as a opt Vim plugin of the packages feature.
 
-### vimpkgsync install opt user/plugin
-Install `user/plugin` from GitHub as a opt Vim plugin of the packages feature.
-
-### vimpkgsync uninstall user/plugin
+### vimpkgsync uninstall [opt] user/plugin
 Uninstall `user/plugin` from start Vim plugins in the packpath.
-
-### vimpkgsync uninstall opt user/plugin
-Uninstall `user/plugin` from opt Vim plugins in the packpath.
+If `opt` is specified, uninstall `user/plugin` from opt Vim plugins in the packpath.
 
 ### vimpkgsync clean
 Uninstall unmanaged Vim plugins in the packpath.
 
-### vimpkgsync help
-TODO
+### vimpkgsync [help]
+Show the help.
 
