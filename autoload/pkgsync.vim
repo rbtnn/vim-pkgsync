@@ -63,18 +63,17 @@ function! pkgsync#list(args) abort
 	let j = s:read_config()
 	call pkgsync#output('[packpath]')
 	call pkgsync#output('  ' .. j['packpath'])
-	call pkgsync#output(' ')
-	call pkgsync#output('[start]')
-	for user in sort(keys(j['plugins']['start']))
-		for plugname in sort(j['plugins']['start'][user])
-			call pkgsync#output(printf('  %s/%s', user, plugname))
-		endfor
-	endfor
-	call pkgsync#output(' ')
-	call pkgsync#output('[opt]')
-	for user in sort(keys(j['plugins']['opt']))
-		for plugname in sort(j['plugins']['opt'][user])
-			call pkgsync#output(printf('  %s/%s', user, plugname))
+	for start_or_opt in ['start', 'opt']
+		call pkgsync#output(' ')
+		call pkgsync#output('[' .. start_or_opt .. ']')
+		for user in sort(keys(j['plugins'][start_or_opt]))
+			for plugname in sort(j['plugins'][start_or_opt][user])
+				if isdirectory(expand(printf('%s/pack/%s/%s/%s', j['packpath'], user, start_or_opt, plugname)))
+					call pkgsync#output(printf('  %s/%s', user, plugname))
+				else
+					call pkgsync#output(printf('  %s/%s (not installed)', user, plugname))
+				endif
+			endfor
 		endfor
 	endfor
 endfunction

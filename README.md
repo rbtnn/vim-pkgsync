@@ -39,17 +39,17 @@ If {packpath} is specified, this plugin manager initializes with {packpath} as t
 If {packpath} is not specified, the default value of {packpath} is `~/vim`.
 
 ### vimpkgsync list
-Show your installed Vim plugin list.
+Show your managed Vim plugin list.
 
 ### vimpkgsync update
 Update your Vim plugins.
 
 ### vimpkgsync install [opt] user/plugin
-Install `user/plugin` from GitHub as a start Vim plugin of the packages feature.
-If `opt` is specified, install `user/plugin` from GitHub as a opt Vim plugin of the packages feature.
+If `opt` is not specified, install `user/plugin` from GitHub as a start Vim plugin of the packages feature.
+If `opt` is specified, install `user/plugin` from GitHub as an opt Vim plugin of the packages feature.
 
 ### vimpkgsync uninstall [opt] user/plugin
-Uninstall `user/plugin` from start Vim plugins in the packpath.
+If `opt` is not specified, uninstall `user/plugin` from start Vim plugins in the packpath.
 If `opt` is specified, uninstall `user/plugin` from opt Vim plugins in the packpath.
 
 ### vimpkgsync clean
