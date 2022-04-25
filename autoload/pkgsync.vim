@@ -152,7 +152,11 @@ function! pkgsync#help(args) abort
 			endif
 			if b
 				if line =~ '^### '
-					call pkgsync#output(line[4:])
+					if get(g:, 'pkgsync_stdout', 0)
+						call pkgsync#output(line[4:])
+					else
+						call pkgsync#output(substitute(line[4:], '\<vimpkgsync\>', ':PkgSync', ''))
+					endif
 				else
 					call pkgsync#output('    ' .. line)
 				endif

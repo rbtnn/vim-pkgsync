@@ -5,7 +5,7 @@
 [![](https://github.com/rbtnn/vim-pkgsync/workflows/ubuntu/badge.svg)](https://github.com/rbtnn/vim-pkgsync/actions/workflows/ubuntu.yml)
 [![](https://github.com/rbtnn/vim-pkgsync/workflows/windows/badge.svg)](https://github.com/rbtnn/vim-pkgsync/actions/workflows/windows.yml)
 
-The minimalist plugin manager for Vim/ Neovim using `+packages` feature.
+The minimalist plugin manager for Vim/Neovim using `+packages` feature.
 vim-pkgsync provides `:PkgSync` command for Vim and `vimpkgsync` command for Terminal that have the same interface.
 
 ![pkgsync](https://user-images.githubusercontent.com/1595779/165096296-44af0deb-e5bb-4ac6-817d-25e462fad376.gif)
