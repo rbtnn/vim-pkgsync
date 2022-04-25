@@ -66,13 +66,17 @@ function! pkgsync#list(args) abort
 	for start_or_opt in ['start', 'opt']
 		call pkgsync#output(' ')
 		call pkgsync#output('[' .. start_or_opt .. ']')
-		for user in sort(keys(j['plugins'][start_or_opt]))
-			for plugname in sort(j['plugins'][start_or_opt][user])
-				if isdirectory(expand(printf('%s/pack/%s/%s/%s', j['packpath'], user, start_or_opt, plugname)))
-					call pkgsync#output(printf('  %s/%s', user, plugname))
+		for user_name in sort(keys(j['plugins'][start_or_opt]))
+			for plugin_name in sort(j['plugins'][start_or_opt][user_name])
+				let dotgit_path = expand(printf('%s/pack/%s/%s/%s/.git', j['packpath'], user_name, start_or_opt, plugin_name))
+				let prefix = ' '
+				let branch_name = ''
+				if filereadable(dotgit_path) || isdirectory(dotgit_path)
+					let branch_name = '(' .. matchstr(get(readfile(expand(dotgit_path .. '/HEAD'), 1), 0, ''), '/\i\+/\zs\i\+') .. ')'
 				else
-					call pkgsync#output(printf('  %s/%s (not installed)', user, plugname))
+					let prefix = '-'
 				endif
+				call pkgsync#output(printf('  %s%s/%s %s', prefix, user_name, plugin_name, branch_name))
 			endfor
 		endfor
 	endfor
@@ -83,19 +87,19 @@ function! pkgsync#install(args) abort
 	let m = matchlist(join(a:args), '^install\s\+\(opt\s\+\)\?\([^/]\+\)/\([^/]\+\)$')
 	if !empty(m)
 		let start_or_opt = (m[1] =~# '^opt\s\+$') ? 'opt' : 'start'
-		let user = m[2]
-		let plugname = m[3]
+		let user_name = m[2]
+		let plugin_name = m[3]
 		let d = {}
-		let d[user] = [plugname]
+		let d[user_name] = [plugin_name]
 		let params = s:make_params(j['packpath'], (start_or_opt == 'start') ? d : {}, (start_or_opt == 'opt') ? d : {})
 		call s:start_jobs(params)
 		call s:wait_jobs(params)
 		call s:helptags(params)
-		let path = globpath(j['packpath'], join(['pack', user, start_or_opt, plugname], '/'))
+		let path = globpath(j['packpath'], join(['pack', user_name, start_or_opt, plugin_name], '/'))
 		if isdirectory(path)
-			let j['plugins'][start_or_opt][user] = get(j['plugins'][start_or_opt], user, [])
-			if -1 == index(j['plugins'][start_or_opt][user], plugname)
-				let j['plugins'][start_or_opt][user] += [plugname]
+			let j['plugins'][start_or_opt][user_name] = get(j['plugins'][start_or_opt], user_name, [])
+			if -1 == index(j['plugins'][start_or_opt][user_name], plugin_name)
+				let j['plugins'][start_or_opt][user_name] += [plugin_name]
 			endif
 			call s:write_config(j)
 		endif
@@ -109,15 +113,15 @@ function! pkgsync#uninstall(args) abort
 	let m = matchlist(join(a:args), '^uninstall\s\+\(opt\s\+\)\?\([^/]\+\)/\([^/]\+\)$')
 	if !empty(m)
 		let start_or_opt = (m[1] =~# '^opt\s\+$') ? 'opt' : 'start'
-		let user = m[2]
-		let plugname = m[3]
-		let j['plugins'][start_or_opt][user] = get(j['plugins'][start_or_opt], user, [])
-		let i = index(j['plugins'][start_or_opt][user], plugname)
+		let user_name = m[2]
+		let plugin_name = m[3]
+		let j['plugins'][start_or_opt][user_name] = get(j['plugins'][start_or_opt], user_name, [])
+		let i = index(j['plugins'][start_or_opt][user_name], plugin_name)
 		if -1 != i
-			call remove(j['plugins'][start_or_opt][user], i)
+			call remove(j['plugins'][start_or_opt][user_name], i)
 		endif
 		call s:write_config(j)
-		let path = globpath(j['packpath'], join(['pack', user, start_or_opt, plugname], '/'))
+		let path = globpath(j['packpath'], join(['pack', user_name, start_or_opt, plugin_name], '/'))
 		call s:delete_carefull(j['packpath'], path)
 	else
 		call pkgsync#error('Invalid arguments!')
@@ -168,15 +172,15 @@ function! pkgsync#comp(ArgLead, CmdLine, CursorPos) abort
 	if filereadable(s:config_path)
 		let j = json_decode(join(readfile(s:config_path), ''))
 		let start_d = get(get(j, 'plugins', {}), 'start', {})
-		for user in sort(keys(start_d))
-			for plugname in sort(start_d[user])
-				let installed_plugins += [printf('%s/%s', user, plugname)]
+		for user_name in sort(keys(start_d))
+			for plugin_name in sort(start_d[user_name])
+				let installed_plugins += [printf('%s/%s', user_name, plugin_name)]
 			endfor
 		endfor
 		let opt_d = get(get(j, 'plugins', {}), 'opt', {})
-		for user in sort(keys(opt_d))
-			for plugname in sort(opt_d[user])
-				let installed_plugins += [printf('%s/%s', user, plugname)]
+		for user_name in sort(keys(opt_d))
+			for plugin_name in sort(opt_d[user_name])
+				let installed_plugins += [printf('%s/%s', user_name, plugin_name)]
 			endfor
 		endfor
 	endif
@@ -248,16 +252,16 @@ function! s:make_params(pack_dir, start_d, opt_d) abort
 	let params = []
 	for d in [a:start_d, a:opt_d]
 		let start_or_opt = (d == a:start_d ? 'start' : 'opt')
-		for username in keys(d)
-			let pack_dir = expand(join([a:pack_dir, 'pack', username, start_or_opt], '/'))
+		for user_name in keys(d)
+			let pack_dir = expand(join([a:pack_dir, 'pack', user_name, start_or_opt], '/'))
 			if !isdirectory(pack_dir)
 				call mkdir(pack_dir, 'p')
 			endif
-			for plugin_name in d[username]
+			for plugin_name in d[user_name]
 				let plugin_dir = pack_dir .. '/' .. plugin_name
 				if isdirectory(plugin_dir)
 					let params += [{
-						\   'name': printf('%s/%s', username, plugin_name),
+						\   'name': printf('%s/%s', user_name, plugin_name),
 						\   'cmd': s:CMDFORMAT_PULL,
 						\   'cwd': plugin_dir,
 						\   'arg': has('nvim') ? { 'lines': [] } : tempname(),
@@ -269,8 +273,8 @@ function! s:make_params(pack_dir, start_d, opt_d) abort
 						\ }]
 				else
 					let params += [{
-						\   'name': printf('%s/%s', username, plugin_name),
-						\   'cmd': printf(s:CMDFORMAT_CLONE, username, plugin_name),
+						\   'name': printf('%s/%s', user_name, plugin_name),
+						\   'cmd': printf(s:CMDFORMAT_CLONE, user_name, plugin_name),
 						\   'cwd': pack_dir,
 						\   'arg': has('nvim') ? { 'lines': [] } : tempname(),
 						\   'job': v:null,
@@ -369,9 +373,9 @@ function! s:delete_unmanaged_plugins(pack_dir, start_d, opt_d) abort
 		let start_or_opt = (d == a:start_d ? 'start' : 'opt')
 		for x in split(globpath(join([a:pack_dir, 'pack', '*', start_or_opt], '/'), '*'), "\n")
 			let exists = v:false
-			for username in keys(d)
-				for plugin_name in d[username]
-					if x =~# '[\/]' .. username .. '[\/]' .. start_or_opt .. '[\/]' .. plugin_name .. '$'
+			for user_name in keys(d)
+				for plugin_name in d[user_name]
+					if x =~# '[\/]' .. user_name .. '[\/]' .. start_or_opt .. '[\/]' .. plugin_name .. '$'
 						let exists = v:true
 						break
 					endif
