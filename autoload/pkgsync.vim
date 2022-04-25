@@ -61,102 +61,81 @@ endfunction
 
 function! pkgsync#list(args) abort
 	let j = s:read_config()
-	if !empty(j)
-		call pkgsync#output('[packpath]')
-		let packpath = expand(get(j, 'packpath', ''))
-		call pkgsync#output('  ' .. packpath)
-		call pkgsync#output(' ')
-
-		call pkgsync#output('[start]')
-		let start_d = get(get(j, 'plugins', {}), 'start', {})
-		for user in sort(keys(start_d))
-			for plugname in sort(start_d[user])
-				call pkgsync#output(printf('  %s/%s', user, plugname))
-			endfor
+	call pkgsync#output('[packpath]')
+	call pkgsync#output('  ' .. j['packpath'])
+	call pkgsync#output(' ')
+	call pkgsync#output('[start]')
+	for user in sort(keys(j['plugins']['start']))
+		for plugname in sort(j['plugins']['start'][user])
+			call pkgsync#output(printf('  %s/%s', user, plugname))
 		endfor
-		call pkgsync#output(' ')
-
-		call pkgsync#output('[opt]')
-		let opt_d = get(get(j, 'plugins', {}), 'opt', {})
-		for user in sort(keys(opt_d))
-			for plugname in sort(opt_d[user])
-				call pkgsync#output(printf('  %s/%s', user, plugname))
-			endfor
+	endfor
+	call pkgsync#output(' ')
+	call pkgsync#output('[opt]')
+	for user in sort(keys(j['plugins']['opt']))
+		for plugname in sort(j['plugins']['opt'][user])
+			call pkgsync#output(printf('  %s/%s', user, plugname))
 		endfor
-	endif
+	endfor
 endfunction
 
 function! pkgsync#install(args) abort
 	let j = s:read_config()
-	if !empty(j)
-		let packpath = expand(get(j, 'packpath', ''))
-		let m = matchlist(join(a:args), '^install\s\+\(opt\s\+\)\?\([^/]\+\)/\([^/]\+\)$')
-		if !empty(m)
-			let start_or_opt = (m[1] =~# '^opt\s\+$') ? 'opt' : 'start'
-			let user = m[2]
-			let plugname = m[3]
-			let d = {}
-			let d[user] = [plugname]
-			let params = s:make_params(packpath, (start_or_opt == 'start') ? d : {}, (start_or_opt == 'opt') ? d : {})
-			call s:start_jobs(params)
-			call s:wait_jobs(params)
-			call s:helptags(params)
-			let path = globpath(packpath, join(['pack', user, start_or_opt, plugname], '/'))
-			if isdirectory(path)
-				let j['plugins'][start_or_opt][user] = get(j['plugins'][start_or_opt], user, [])
-				if -1 == index(j['plugins'][start_or_opt][user], plugname)
-					let j['plugins'][start_or_opt][user] += [plugname]
-				endif
-				call s:write_config(j)
+	let m = matchlist(join(a:args), '^install\s\+\(opt\s\+\)\?\([^/]\+\)/\([^/]\+\)$')
+	if !empty(m)
+		let start_or_opt = (m[1] =~# '^opt\s\+$') ? 'opt' : 'start'
+		let user = m[2]
+		let plugname = m[3]
+		let d = {}
+		let d[user] = [plugname]
+		let params = s:make_params(j['packpath'], (start_or_opt == 'start') ? d : {}, (start_or_opt == 'opt') ? d : {})
+		call s:start_jobs(params)
+		call s:wait_jobs(params)
+		call s:helptags(params)
+		let path = globpath(j['packpath'], join(['pack', user, start_or_opt, plugname], '/'))
+		if isdirectory(path)
+			let j['plugins'][start_or_opt][user] = get(j['plugins'][start_or_opt], user, [])
+			if -1 == index(j['plugins'][start_or_opt][user], plugname)
+				let j['plugins'][start_or_opt][user] += [plugname]
 			endif
+			call s:write_config(j)
 		endif
+	else
+		call pkgsync#error('Invalid arguments!')
 	endif
 endfunction
 
 function! pkgsync#uninstall(args) abort
 	let j = s:read_config()
-	if !empty(j)
-		let packpath = expand(get(j, 'packpath', ''))
-		let m = matchlist(join(a:args), '^uninstall\s\+\(opt\s\+\)\?\([^/]\+\)/\([^/]\+\)$')
-		if !empty(m)
-			let start_or_opt = (m[1] =~# '^opt\s\+$') ? 'opt' : 'start'
-			let user = m[2]
-			let plugname = m[3]
-			let j['plugins'][start_or_opt][user] = get(j['plugins'][start_or_opt], user, [])
-			let i = index(j['plugins'][start_or_opt][user], plugname)
-			if -1 != i
-				call remove(j['plugins'][start_or_opt][user], i)
-			endif
-			call s:write_config(j)
-			let path = globpath(packpath, join(['pack', user, start_or_opt, plugname], '/'))
-			call s:delete_carefull(packpath, path)
-		else
-			call pkgsync#error('Invalid arguments!')
+	let m = matchlist(join(a:args), '^uninstall\s\+\(opt\s\+\)\?\([^/]\+\)/\([^/]\+\)$')
+	if !empty(m)
+		let start_or_opt = (m[1] =~# '^opt\s\+$') ? 'opt' : 'start'
+		let user = m[2]
+		let plugname = m[3]
+		let j['plugins'][start_or_opt][user] = get(j['plugins'][start_or_opt], user, [])
+		let i = index(j['plugins'][start_or_opt][user], plugname)
+		if -1 != i
+			call remove(j['plugins'][start_or_opt][user], i)
 		endif
+		call s:write_config(j)
+		let path = globpath(j['packpath'], join(['pack', user, start_or_opt, plugname], '/'))
+		call s:delete_carefull(j['packpath'], path)
+	else
+		call pkgsync#error('Invalid arguments!')
 	endif
 endfunction
 
 function! pkgsync#update(args) abort
 	let j = s:read_config()
-	if !empty(j)
-		let packpath = expand(get(j, 'packpath', ''))
-		let start_d = get(get(j, 'plugins', {}), 'start', {})
-		let opt_d = get(get(j, 'plugins', {}), 'opt', {})
-		let params = s:make_params(packpath, start_d, opt_d)
-		call s:start_jobs(params)
-		call s:wait_jobs(params)
-		call s:helptags(params)
-	endif
+	let params = s:make_params(j['packpath'], j['plugins']['start'], j['plugins']['opt'])
+	call s:start_jobs(params)
+	call s:wait_jobs(params)
+	call s:helptags(params)
 endfunction
 
 function! pkgsync#clean(args) abort
 	let j = s:read_config()
-	if !empty(j)
-		let packpath = expand(get(j, 'packpath', ''))
-		let start_d = get(get(j, 'plugins', {}), 'start', {})
-		let opt_d = get(get(j, 'plugins', {}), 'opt', {})
-		call s:delete_unmanaged_plugins(packpath, start_d, opt_d)
-	endif
+	call s:delete_unmanaged_plugins(j['packpath'], j['plugins']['start'], j['plugins']['opt'])
 endfunction
 
 function! pkgsync#help(args) abort
@@ -190,12 +169,12 @@ function! pkgsync#comp(ArgLead, CmdLine, CursorPos) abort
 	if filereadable(s:config_path)
 		let j = json_decode(join(readfile(s:config_path), ''))
 		let start_d = get(get(j, 'plugins', {}), 'start', {})
-		let opt_d = get(get(j, 'plugins', {}), 'opt', {})
 		for user in sort(keys(start_d))
 			for plugname in sort(start_d[user])
 				let installed_plugins += [printf('%s/%s', user, plugname)]
 			endfor
 		endfor
+		let opt_d = get(get(j, 'plugins', {}), 'opt', {})
 		for user in sort(keys(opt_d))
 			for plugname in sort(opt_d[user])
 				let installed_plugins += [printf('%s/%s', user, plugname)]
@@ -250,7 +229,13 @@ function! s:read_config() abort
 		if !has_key(j, 'packpath') || !has_key(j, 'plugins')
 			call pkgsync#error(printf('%s is broken! Please you should remove it and try initialization again!', string(s:config_path)))
 		endif
-		return j
+		return {
+			\   'packpath': expand(j['packpath']),
+			\   'plugins': {
+			\     'start': get(j['plugins'], 'start', {}),
+			\     'opt': get(j['plugins'], 'opt', {}),
+			\   }
+			\ }
 	else
 		call pkgsync#error('You are not initialized vim-pkgsync! Please initialize it!')
 	endif
