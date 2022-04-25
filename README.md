@@ -55,3 +55,6 @@ Uninstall `user/plugin` from opt Vim plugins in the packpath.
 ### vimpkgsync clean
 Uninstall unmanaged Vim plugins in the packpath.
 
+### vimpkgsync help
+TODO
+

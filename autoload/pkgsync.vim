@@ -5,7 +5,31 @@ let s:CMDFORMAT_PULL  = 'git -c credential.helper= pull'
 let s:KIND_UPDATING = 0
 let s:KIND_INSTALLING = 1
 
+let s:subcmd2functions = {
+	\ 'init': function('pkgsync#init'),
+	\ 'list': function('pkgsync#list'),
+	\ 'install': function('pkgsync#install'),
+	\ 'uninstall': function('pkgsync#uninstall'),
+	\ 'update': function('pkgsync#update'),
+	\ 'clean': function('pkgsync#clean'),
+	\ 'help': function('pkgsync#help'),
+	\ }
+
 let s:config_path = expand('~/pkgsync.json')
+
+function! pkgsync#parse_cmdline(args) abort
+	let args = a:args
+	if 0 < len(args)
+		let i = index(keys(s:subcmd2functions), args[0])
+		if -1 != i
+			call call(s:subcmd2functions[args[0]], [args])
+		else
+			call pkgsync#error('unknown subcommand: ' .. string(args[0]))
+		endif
+	else
+		call pkgsync#help(args)
+	endif
+endfunction
 
 function! pkgsync#error(text) abort
 	throw 'error: ' .. a:text
@@ -44,8 +68,8 @@ function! pkgsync#list(args) abort
 
 		call pkgsync#output('[start]')
 		let start_d = get(get(j, 'plugins', {}), 'start', {})
-		for user in keys(start_d)
-			for plugname in start_d[user]
+		for user in sort(keys(start_d))
+			for plugname in sort(start_d[user])
 				call pkgsync#output(printf('  %s/%s', user, plugname))
 			endfor
 		endfor
@@ -53,8 +77,8 @@ function! pkgsync#list(args) abort
 
 		call pkgsync#output('[opt]')
 		let opt_d = get(get(j, 'plugins', {}), 'opt', {})
-		for user in keys(opt_d)
-			for plugname in opt_d[user]
+		for user in sort(keys(opt_d))
+			for plugname in sort(opt_d[user])
 				call pkgsync#output(printf('  %s/%s', user, plugname))
 			endfor
 		endfor
@@ -105,6 +129,8 @@ function! pkgsync#uninstall(args) abort
 			call s:write_config(j)
 			let path = globpath(packpath, join(['pack', user, start_or_opt, plugname], '/'))
 			call s:delete_carefull(packpath, path)
+		else
+			call pkgsync#error('Invalid arguments!')
 		endif
 	endif
 endfunction
@@ -132,10 +158,71 @@ function! pkgsync#clean(args) abort
 	endif
 endfunction
 
-function! pkgsync#comp(ArgLead, CmdLine, CursorPos) abort
-	let xs = ['init', 'list', 'update', 'install', 'uninstall', 'clean']
-	return filter(xs, { i,x -> -1 != match(x, a:ArgLead) })
+function! pkgsync#help(args) abort
+	call pkgsync#output('[help documents]')
 endfunction
+
+function! pkgsync#comp(ArgLead, CmdLine, CursorPos) abort
+	let subcmds = keys(s:subcmd2functions)
+	let xs = split(a:CmdLine, '\s\+')
+	let candidates = []
+	let installed_plugins = []
+
+	if filereadable(s:config_path)
+		let j = json_decode(join(readfile(s:config_path), ''))
+		let start_d = get(get(j, 'plugins', {}), 'start', {})
+		let opt_d = get(get(j, 'plugins', {}), 'opt', {})
+		for user in sort(keys(start_d))
+			for plugname in sort(start_d[user])
+				let installed_plugins += [printf('%s/%s', user, plugname)]
+			endfor
+		endfor
+		for user in sort(keys(opt_d))
+			for plugname in sort(opt_d[user])
+				let installed_plugins += [printf('%s/%s', user, plugname)]
+			endfor
+		endfor
+	endif
+
+	if (1 == len(xs))
+		let candidates = subcmds
+	elseif 2 == len(xs)
+		if a:CmdLine =~# '\s\+$'
+			if xs[1] == 'install'
+				let candidates = ['opt']
+			elseif xs[1] == 'uninstall'
+				let candidates = ['opt']
+				for x in installed_plugins
+					if -1 == index(xs, x)
+						let candidates += [x]
+					endif
+				endfor
+			endif
+		else
+			let candidates = subcmds
+		endif
+	elseif (3 == len(xs)) || (4 == len(xs))
+		if xs[1] == 'install'
+			if a:CmdLine !~# '\s\+$'
+				let candidates = ['opt']
+			endif
+		elseif xs[1] == 'uninstall'
+			if a:CmdLine !~# '\s\+$'
+				let candidates = ['opt']
+			endif
+			if (a:CmdLine !~# '\s\+$') || ((3 == len(xs)) && (xs[2] == 'opt'))
+				for x in installed_plugins
+					if -1 == index(xs, x)
+						let candidates += [x]
+					endif
+				endfor
+			endif
+		endif
+	endif
+
+	return filter(candidates, { i,x -> -1 != match(x, a:ArgLead) })
+endfunction
+
 
 
 function! s:read_config() abort

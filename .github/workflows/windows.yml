@@ -50,3 +50,7 @@ jobs:
         run: |
           call bin\vimpkgsync.cmd list
 
+      - name: help
+        shell: cmd
+        run: |
+          call bin\vimpkgsync.cmd help
