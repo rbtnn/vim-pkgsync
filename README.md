@@ -2,6 +2,8 @@
 # vim-pkgsync
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![](https://github.com/rbtnn/vim-pkgsync/workflows/ubuntu/badge.svg)
+![](https://github.com/rbtnn/vim-pkgsync/workflows/windows/badge.svg)
 
 The minimalist plugin manager for Vim/ Neovim using `+packages` feature.
 vim-pkgsync provides `:PkgSync` command for Vim and `vimpkgsync` command for Terminal.
