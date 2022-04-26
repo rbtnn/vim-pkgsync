@@ -91,11 +91,11 @@ function! pkgsync#install(args) abort
 		let plugin_name = m[3]
 		let d = {}
 		let d[user_name] = [plugin_name]
-		let params = s:make_params(j['packpath'], (start_or_opt == 'start') ? d : {}, (start_or_opt == 'opt') ? d : {})
+		let params = s:make_params(expand(j['packpath']), (start_or_opt == 'start') ? d : {}, (start_or_opt == 'opt') ? d : {})
 		call s:start_jobs(params)
 		call s:wait_jobs(params)
 		call s:helptags(params)
-		let path = globpath(j['packpath'], join(['pack', user_name, start_or_opt, plugin_name], '/'))
+		let path = globpath(expand(j['packpath']), join(['pack', user_name, start_or_opt, plugin_name], '/'))
 		if isdirectory(path)
 			let j['plugins'][start_or_opt][user_name] = get(j['plugins'][start_or_opt], user_name, [])
 			if -1 == index(j['plugins'][start_or_opt][user_name], plugin_name)
@@ -121,8 +121,8 @@ function! pkgsync#uninstall(args) abort
 			call remove(j['plugins'][start_or_opt][user_name], i)
 		endif
 		call s:write_config(j)
-		let path = globpath(j['packpath'], join(['pack', user_name, start_or_opt, plugin_name], '/'))
-		call s:delete_carefull(j['packpath'], path)
+		let path = globpath(expand(j['packpath']), join(['pack', user_name, start_or_opt, plugin_name], '/'))
+		call s:delete_carefull(expand(j['packpath']), path)
 	else
 		call pkgsync#error('Invalid arguments!')
 	endif
@@ -130,7 +130,7 @@ endfunction
 
 function! pkgsync#update(args) abort
 	let j = s:read_config()
-	let params = s:make_params(j['packpath'], j['plugins']['start'], j['plugins']['opt'])
+	let params = s:make_params(expand(j['packpath']), j['plugins']['start'], j['plugins']['opt'])
 	call s:start_jobs(params)
 	call s:wait_jobs(params)
 	call s:helptags(params)
@@ -138,7 +138,7 @@ endfunction
 
 function! pkgsync#clean(args) abort
 	let j = s:read_config()
-	call s:delete_unmanaged_plugins(j['packpath'], j['plugins']['start'], j['plugins']['opt'])
+	call s:delete_unmanaged_plugins(expand(j['packpath']), j['plugins']['start'], j['plugins']['opt'])
 endfunction
 
 function! pkgsync#help(args) abort
@@ -237,7 +237,7 @@ function! s:read_config() abort
 			call pkgsync#error(printf('%s is broken! Please you should remove it and try initialization again!', string(s:config_path)))
 		endif
 		return {
-			\   'packpath': expand(j['packpath']),
+			\   'packpath': j['packpath'],
 			\   'plugins': {
 			\     'start': get(j['plugins'], 'start', {}),
 			\     'opt': get(j['plugins'], 'opt', {}),
@@ -404,7 +404,7 @@ endfunction
 
 function! s:delete_carefull(pack_dir, path) abort
 	if (-1 != index(split(a:path, '[\/]'), 'pack')) && (a:path[:(len(a:pack_dir) - 1)] == a:pack_dir)
-		call pkgsync#output(printf('Deleting the unmanaged directory: "%s"', a:path))
+		call pkgsync#output(printf('Deleting the directory: "%s"', a:path))
 		call delete(a:path, 'rf')
 	endif
 endfunction
