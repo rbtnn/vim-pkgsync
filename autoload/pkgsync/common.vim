@@ -15,13 +15,21 @@ function! pkgsync#common#read_config() abort
 		if !has_key(j, 'packpath') || !has_key(j, 'plugins')
 			call pkgsync#error(printf('%s is broken! Please you should remove it and try initialization again!', string(pkgsync#common#get_config_path())))
 		endif
-		return {
+		let d = {
 			\   'packpath': j['packpath'],
 			\   'plugins': {
 			\     'start': get(j['plugins'], 'start', {}),
 			\     'opt': get(j['plugins'], 'opt', {}),
 			\   }
 			\ }
+		for start_or_opt in ['start', 'opt']
+			for key in keys(d['plugins'][start_or_opt])
+				if 0 == len(d['plugins'][start_or_opt][key])
+					call remove(d['plugins'][start_or_opt], key)
+				endif
+			endfor
+		endfor
+		return d
 	else
 		call pkgsync#error('You are not initialized vim-pkgsync! Please initialize it!')
 	endif
