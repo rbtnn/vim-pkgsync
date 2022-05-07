@@ -19,7 +19,7 @@ function! pkgsync#parse_cmdline(args) abort
 			call pkgsync#error('unknown subcommand: ' .. string(args[0]))
 		endif
 	else
-		call pkgsync#help(args)
+		call pkgsync#subcmds#help#exec(args)
 	endif
 endfunction
 

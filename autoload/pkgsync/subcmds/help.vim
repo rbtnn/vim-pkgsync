@@ -15,7 +15,9 @@ function! pkgsync#subcmds#help#exec(args) abort
 					if get(g:, 'pkgsync_stdout', 0)
 						call pkgsync#output(line[4:])
 					else
+						echohl Title
 						call pkgsync#output(substitute(line[4:], '\<vimpkgsync\>', ':PkgSync', ''))
+						echohl None
 					endif
 				else
 					call pkgsync#output('    ' .. line)
