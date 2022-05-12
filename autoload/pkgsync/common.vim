@@ -36,7 +36,26 @@ function! pkgsync#common#read_config() abort
 endfunction
 
 function! pkgsync#common#write_config(j) abort
-	call writefile([json_encode(a:j)], pkgsync#common#get_config_path())
+	let lines = []
+	let lines += ['{']
+	let lines += [printf('%s"packpath": "%s",', "\t", a:j['packpath'])]
+	let lines += [printf('%s"plugins": {', "\t")]
+	for start_or_opt in ['start', 'opt']
+		let lines += [printf('%s"%s": {', "\t\t", start_or_opt)]
+		let user_names = sort(keys(a:j['plugins'][start_or_opt]))
+		for user_name in user_names
+			let lines += [printf('%s"%s": [', "\t\t\t", user_name)]
+			let plugin_names = sort(a:j['plugins'][start_or_opt][user_name])
+			for plugin_name in plugin_names
+				let lines += [printf('%s"%s"%s', "\t\t\t\t", plugin_name, (plugin_names[-1] != plugin_name) ? ',' : '')]
+			endfor
+			let lines += [printf('%s]%s', "\t\t\t", (user_names[-1] != user_name) ? ',' : '')]
+		endfor
+		let lines += [printf('%s}%s', "\t\t", (start_or_opt == 'start') ? ',' : '')]
+	endfor
+	let lines += [printf('%s}', "\t")]
+	let lines += ['}']
+	call writefile(lines, pkgsync#common#get_config_path())
 endfunction
 
 function! pkgsync#common#make_params(pack_dir, start_d, opt_d) abort
