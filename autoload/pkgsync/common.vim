@@ -40,18 +40,19 @@ function! pkgsync#common#write_config(j) abort
 	let lines += ['{']
 	let lines += [printf('%s"packpath": "%s",', "\t", a:j['packpath'])]
 	let lines += [printf('%s"plugins": {', "\t")]
-	for start_or_opt in ['start', 'opt']
+	let start_or_opts = filter(['start', 'opt'], { _,x -> 0 < len(keys(get(a:j['plugins'], x, {}))) })
+	for start_or_opt in start_or_opts
 		let lines += [printf('%s"%s": {', "\t\t", start_or_opt)]
-		let user_names = sort(keys(a:j['plugins'][start_or_opt]))
+		let user_names = filter(sort(keys(a:j['plugins'][start_or_opt])), { _,x -> 0 < len(get(a:j['plugins'][start_or_opt], x, [])) })
 		for user_name in user_names
-			let lines += [printf('%s"%s": [', "\t\t\t", user_name)]
 			let plugin_names = sort(a:j['plugins'][start_or_opt][user_name])
+			let lines += [printf('%s"%s": [', "\t\t\t", user_name)]
 			for plugin_name in plugin_names
 				let lines += [printf('%s"%s"%s', "\t\t\t\t", plugin_name, (plugin_names[-1] != plugin_name) ? ',' : '')]
 			endfor
 			let lines += [printf('%s]%s', "\t\t\t", (user_names[-1] != user_name) ? ',' : '')]
 		endfor
-		let lines += [printf('%s}%s', "\t\t", (start_or_opt == 'start') ? ',' : '')]
+		let lines += [printf('%s}%s', "\t\t", (start_or_opts[-1] != start_or_opt) ? ',' : '')]
 	endfor
 	let lines += [printf('%s}', "\t")]
 	let lines += ['}']

@@ -3,7 +3,8 @@ function! pkgsync#subcmds#list#exec(args) abort
 	let j = pkgsync#common#read_config()
 	call pkgsync#output('[packpath]')
 	call pkgsync#output('  ' .. j['packpath'])
-	for start_or_opt in ['start', 'opt']
+	let start_or_opts = filter(['start', 'opt'], { _,x -> 0 < len(keys(get(j['plugins'], x, {}))) })
+	for start_or_opt in start_or_opts
 		call pkgsync#output(' ')
 		call pkgsync#output('[' .. start_or_opt .. ']')
 		for user_name in sort(keys(j['plugins'][start_or_opt]))

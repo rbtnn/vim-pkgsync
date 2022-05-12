@@ -11,6 +11,9 @@ function! pkgsync#subcmds#uninstall#exec(args) abort
 		if -1 != i
 			call remove(j['plugins'][start_or_opt][user_name], i)
 		endif
+		if 0 == len(j['plugins'][start_or_opt][user_name])
+			call remove(j['plugins'][start_or_opt], user_name)
+		endif
 		call pkgsync#common#write_config(j)
 		let path = globpath(expand(j['packpath']), join(['pack', user_name, start_or_opt, plugin_name], '/'))
 		call pkgsync#common#delete_carefull(expand(j['packpath']), path)
