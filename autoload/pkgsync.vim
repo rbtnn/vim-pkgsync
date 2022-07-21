@@ -94,6 +94,6 @@ function! pkgsync#comp(ArgLead, CmdLine, CursorPos) abort
 		endif
 	endif
 
-	return filter(candidates, { i,x -> -1 != match(x, a:ArgLead) })
+	return sort(filter(candidates, { i,x -> -1 != match(x, a:ArgLead) }), { i1, i2 -> match(i1, a:ArgLead) - match(i2, a:ArgLead) })
 endfunction
 
