@@ -1,10 +1,10 @@
 
 function! pkgsync#subcmds#install#exec(args) abort
   let j = pkgsync#common#read_config()
-  let m = matchlist(join(a:args), '^install\s\+\(opt\s\+\)\?\(branch=\S\+\s\+\)\?\([^/ ]\+\)/\([^/ ]\+\)$')
+  let m = matchlist(join(a:args), '^install\s\+\(opt\s\+\)\?\(branch[= ]\S\+\s\+\)\?\([^/ ]\+\)/\([^/ ]\+\)$')
   if !empty(m)
     let start_or_opt = (m[1] =~# '^opt\s\+$') ? 'opt' : 'start'
-    let branch_name = matchstr(trim(m[2]), '^branch=\zs.*$')
+    let branch_name = matchstr(trim(m[2]), '^branch[= ]\zs.*$')
     let user_name = m[3]
     let plugin_name = m[4]
     let d = {}
