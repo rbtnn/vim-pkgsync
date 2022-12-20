@@ -46,10 +46,10 @@ Show your managed Vim plugin list.
 ### vimpkgsync update
 Update your Vim plugins.
 
-### vimpkgsync install [opt] [--branch={branch-name}] user/plugin
+### vimpkgsync install [opt] [branch={branch-name}] user/plugin
 If `opt` is not specified, install `user/plugin` from GitHub as a start Vim plugin of the packages feature.
 If `opt` is specified, install `user/plugin` from GitHub as an opt Vim plugin of the packages feature.
-If `--branch={branch-name}` is specified, install the {branch-name} branch of `user/plugin`.
+If `branch={branch-name}` is specified, install the {branch-name} branch of `user/plugin`.
 
 ### vimpkgsync uninstall [opt] user/plugin
 If `opt` is not specified, uninstall `user/plugin` from start Vim plugins in the packpath.

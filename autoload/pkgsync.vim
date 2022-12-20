@@ -64,8 +64,8 @@ function! pkgsync#comp(ArgLead, CmdLine, CursorPos) abort
   else
     if xs[1] == 'install'
       let contains_opt = -1 != index(xs, 'opt')
-      let contains_branch = 0 < len(filter(deepcopy(xs), { _,x -> !empty(matchstr(x, '^--branch=')) }))
-      let candidates = (contains_opt || contains_branch ? [] : ['opt']) + (contains_branch ? [] : ['--branch='])
+      let contains_branch = 0 < len(filter(deepcopy(xs), { _,x -> !empty(matchstr(x, '^branch=')) }))
+      let candidates = (contains_opt || contains_branch ? [] : ['opt']) + (contains_branch ? [] : ['branch='])
     elseif xs[1] == 'uninstall'
       if 2 == len(xs)
         if a:CmdLine =~# '\s\+$'
