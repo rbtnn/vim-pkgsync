@@ -13,7 +13,7 @@ function! pkgsync#subcmds#list#exec(args) abort
         let prefix = ' '
         let branch_name = ''
         if filereadable(dotgit_path) || isdirectory(dotgit_path)
-          let branch_name = '(' .. matchstr(get(readfile(expand(dotgit_path .. '/HEAD'), 1), 0, ''), '/\i\+/\zs\i\+') .. ')'
+          let branch_name = '(' .. matchstr(get(readfile(expand(dotgit_path .. '/HEAD'), 1), 0, ''), '/\i\+/\zs[^/]\+$') .. ')'
         else
           let prefix = '-'
         endif
