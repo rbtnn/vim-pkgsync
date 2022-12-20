@@ -30,7 +30,7 @@ function! pkgsync#subcmds#install#exec(args) abort
       call pkgsync#common#write_config(j)
     endif
   else
-    call pkgsync#error('Invalid arguments!')
+    call pkgsync#error(printf('Invalid arguments: %s', string(join(a:args))))
   endif
 endfunction
 
