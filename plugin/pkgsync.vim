@@ -14,6 +14,7 @@ function! s:pkgsync(...) abort
 	catch
 		echohl Error
 		echo '[vim-pkgsync]' v:exception
+		echo '[vim-pkgsync]' v:throwpoint
 		echohl None
 	finally
 		let &more = m

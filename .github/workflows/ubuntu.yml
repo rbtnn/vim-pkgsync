@@ -26,8 +26,13 @@ jobs:
         run: |
           bin/vimpkgsync install thinca/vim-quickrun
           bin/vimpkgsync install NLKNguyen/papercolor-theme
+          bin/vimpkgsync install --branch=center mhinz/vim-startify
+
+      - name: install opt
+        run: |
           bin/vimpkgsync install opt itchyny/lightline.vim
           bin/vimpkgsync install opt rbtnn/vim-gloaded
+          bin/vimpkgsync install opt --branch=visual-mode AndrewRadev/splitjoin.vim
 
       - name: update
         run: |
